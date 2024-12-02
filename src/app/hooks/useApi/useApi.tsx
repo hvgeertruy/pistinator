@@ -1,6 +1,8 @@
 import { useState } from "react";
 
 function useApi(url: string, options?: any) {
+  const debug = process.env.NEXT_PUBLIC_DEBUG;
+
   const opts = {
     headers: {
       Accept: "application/json",
@@ -13,6 +15,7 @@ function useApi(url: string, options?: any) {
   const [error, setError] = useState(null);
 
   const fetchData = async () => {
+    debug && console.info("[DEBUG] fetching url", url);
     try {
       setIsLoading(true);
 

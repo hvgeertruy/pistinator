@@ -30,7 +30,7 @@ const LiftList: React.FC<Lifts> = ({ lifts }) => {
                   {lift.tags?.name}
                 </Button>
               </SheetTrigger>
-              <SheetContent side="bottom">
+              <SheetContent className="bg-white" side="bottom">
                 <SheetHeader>
                   <SheetTitle>
                     <div className="flex flex-row">
