@@ -56,7 +56,6 @@ export async function GET(request: Request, context: any) {
 
     const data = await response.json();
     const result = data.choices[0].message.content;
-    console.log(">>", result);
 
     // API can yield multiple results, any one should suffice
     return NextResponse.json(result, { status: 200 });

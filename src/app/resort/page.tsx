@@ -3,7 +3,7 @@
 import Header from "@/components/header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useApi from "../hooks/useApi/useApi";
 import { LiftProps } from "../types/lifts";
 import LiftList from "@/components/liftList/liftList";
@@ -47,15 +47,20 @@ export default function Lifts() {
     coordsResult && setCoords(coordsResult.data);
     debug && console.info("[DEBUG] coords:", coords);
 
-    // get lifts based on coords
-    const liftsResult = await fetchLifts();
-    //
-    liftsResult?.data?.map((item: LiftProps) => (item.resort = resort));
-    liftsResult && setLifts(liftsResult.data); // TODO; not working as expected?
-    debug && console.info("[DEBUG] lifts:", liftsResult);
-
     setIsLoading(false);
   };
+
+  useEffect(() => {
+    // get lifts based on coords
+    const getit = async () => {
+      const liftsResult = await fetchLifts();
+      liftsResult?.data?.map((item: LiftProps) => (item.resort = resort));
+      liftsResult && setLifts(liftsResult.data); // TODO; not working as expected?
+      debug && console.info("[DEBUG] lifts:", liftsResult);
+    };
+
+    getit();
+  }, [coords]);
 
   return (
     <div className="grid grid-cols-2 m-8 gap-8">
@@ -84,7 +89,6 @@ export default function Lifts() {
           high-altitude location ensures reliable snow conditions throughout the
           season.
         </div> */}
-        <Header type="h2">Resort map</Header>
         {/* minlat: {coords.minLatitude},
         <br />
         maxlat:{coords.maxLatitude},

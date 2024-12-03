@@ -202,9 +202,13 @@ const LiftDetails: React.FC<LiftProps> = ({ resort, id, tags }) => {
             <div className="w-6/12">Sources</div>
             <div className="w-6/12">
               <span style={{ color: "#666" }}>
-                {/* ({liftDetails.sources.join(",")}) */}
                 {liftDetails.sources.map((source: string) => (
-                  <a className="block" target="_blank" href={source}>
+                  <a
+                    key={source}
+                    className="block"
+                    target="_blank"
+                    href={source}
+                  >
                     {source}
                   </a>
                 ))}
