@@ -1,0 +1,7 @@
+CHATGPT_API_KEY=<your-api-key>
+URL_RESORT_COORDS=https://nominatim.openstreetmap.org/search?format=json&q=
+URL_LIFTS_BY_COORDS=https://overpass-api.de/api/interpreter
+URL_MAP_BY_LIFT_ID=https://www.openstreetmap.org/way/48199277
+URL_LIFT_BY_AI=https://api.openai.com/v1/chat/completions
+NEXT_PUBLIC_MAP_URI=https://overpass-turbo.eu/map.html
+NEXT_PUBLIC_DEBUG=true
