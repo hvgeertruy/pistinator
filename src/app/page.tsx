@@ -1,193 +1,107 @@
-// import Image from "next/image";
-// import styles from "./page.module.css";
+"use client";
 
-// <style>
+import { useEffect, useState } from "react";
+import Header from "@/components/header";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import LiftList from "@/components/liftList/liftList";
+import MapResort from "@/components/mapResort/mapResort";
+import useApi from "@/app/hooks/useApi/useApi";
+import { LiftProps } from "@/app/types/lifts";
+import { CoordsProps } from "@/app/types/coords";
 
-// html,
-// body {
-//   max-width: 100vw;
-//   overflow-x: hidden;
-// }
+export default function Lifts() {
+  const debug = process.env.NEXT_PUBLIC_DEBUG;
+  const initialCoords = {
+    minLongitude: "0",
+    minLatitude: "0",
+    maxLongitude: "0",
+    maxLatitude: "0",
+  };
+  const [resort, setResort] = useState(localStorage.getItem("resort") || "");
+  const [lifts, setLifts] = useState<LiftProps[]>([]);
+  const [coords, setCoords] = useState<CoordsProps>(initialCoords);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { fetchData: fetchCoords } = useApi(
+    `api/getCoordsByResort/${encodeURIComponent(resort)}`
+  );
+  const { fetchData: fetchLifts } = useApi(
+    `api/getLiftsByCoords/${encodeURIComponent(
+      coords.minLatitude
+    )}/${encodeURIComponent(coords.minLongitude)}/${encodeURIComponent(
+      coords.maxLatitude
+    )}/${encodeURIComponent(coords.maxLongitude)}`
+  );
 
-// body {
-//   font-family: Arial, Helvetica, sans-serif;
-//   -webkit-font-smoothing: antialiased;
-//   -moz-osx-font-smoothing: grayscale;
-// }
+  const handleSearchInputChange = (event: { target: HTMLInputElement }) => {
+    const value = (event.target as HTMLInputElement).value;
+    localStorage.setItem("resort", value);
+    setResort(value);
+  };
 
-// * {
-//   box-sizing: border-box;
-//   padding: 0;
-//   margin: 0;
-// }
+  const handleSearch = async () => {
+    setIsLoading(true);
 
-// a {
-//   color: inherit;
-//   text-decoration: none;
-// }
+    // get coords
+    const coordsResult = await fetchCoords();
+    coordsResult && setCoords(coordsResult.data);
+    debug && console.info("[DEBUG] coords:", coords);
 
-// @media (prefers-color-scheme: dark) {
-//   html {
-//     color-scheme: dark;
-//   }
-// }
+    setIsLoading(false);
+  };
 
-// @layer base {
-//   :root {
-//     --background: 0 0% 100%;
-//     --foreground: 222.2 84% 4.9%;
-//     --card: 0 0% 100%;
-//     --card-foreground: 222.2 84% 4.9%;
-//     --popover: 0 0% 100%;
-//     --popover-foreground: 222.2 84% 4.9%;
-//     --primary: 222.2 47.4% 11.2%;
-//     --primary-foreground: 210 40% 98%;
-//     --secondary: 210 40% 96.1%;
-//     --secondary-foreground: 222.2 47.4% 11.2%;
-//     --muted: 210 40% 96.1%;
-//     --muted-foreground: 215.4 16.3% 46.9%;
-//     --accent: 210 40% 96.1%;
-//     --accent-foreground: 222.2 47.4% 11.2%;
-//     --destructive: 0 84.2% 60.2%;
-//     --destructive-foreground: 210 40% 98%;
-//     --border: 214.3 31.8% 91.4%;
-//     --input: 214.3 31.8% 91.4%;
-//     --ring: 222.2 84% 4.9%;
-//     --chart-1: 12 76% 61%;
-//     --chart-2: 173 58% 39%;
-//     --chart-3: 197 37% 24%;
-//     --chart-4: 43 74% 66%;
-//     --chart-5: 27 87% 67%;
-//     --radius: 0.5rem;
-//   }
-//   .dark {
-//     --background: 222.2 84% 4.9%;
-//     --foreground: 210 40% 98%;
-//     --card: 222.2 84% 4.9%;
-//     --card-foreground: 210 40% 98%;
-//     --popover: 222.2 84% 4.9%;
-//     --popover-foreground: 210 40% 98%;
-//     --primary: 210 40% 98%;
-//     --primary-foreground: 222.2 47.4% 11.2%;
-//     --secondary: 217.2 32.6% 17.5%;
-//     --secondary-foreground: 210 40% 98%;
-//     --muted: 217.2 32.6% 17.5%;
-//     --muted-foreground: 215 20.2% 65.1%;
-//     --accent: 217.2 32.6% 17.5%;
-//     --accent-foreground: 210 40% 98%;
-//     --destructive: 0 62.8% 30.6%;
-//     --destructive-foreground: 210 40% 98%;
-//     --border: 217.2 32.6% 17.5%;
-//     --input: 217.2 32.6% 17.5%;
-//     --ring: 212.7 26.8% 83.9%;
-//     --chart-1: 220 70% 50%;
-//     --chart-2: 160 60% 45%;
-//     --chart-3: 30 80% 55%;
-//     --chart-4: 280 65% 60%;
-//     --chart-5: 340 75% 55%;
-//   }
-// }
+  useEffect(() => {
+    // get lifts based on coords
+    const getit = async () => {
+      const liftsResult = await fetchLifts();
+      liftsResult?.data?.map((item: LiftProps) => (item.resort = resort));
+      liftsResult && setLifts(liftsResult.data); // TODO; not working as expected?
+      debug && console.info("[DEBUG] lifts:", liftsResult);
+    };
 
-// @layer base {
-//   * {
-//     @apply border-border;
-//   }
-//   body {
-//     @apply bg-background text-foreground;
-//   }
-// }
+    getit();
+  }, [coords]);
 
-// </style>
-
-// export default function Home() {
-//   return (
-//     <div className={styles.page}>
-//       <main className={styles.main}>
-//         <Image
-//           className={styles.logo}
-//           src="/next.svg"
-//           alt="Next.js logo"
-//           width={180}
-//           height={38}
-//           priority
-//         />
-//         <ol>
-//           <li>
-//             Get started by editing <code>src/app/pageer.tsx</code>.
-//           </li>
-//           <li>Save and see your changes instantly.</li>
-//         </ol>
-
-//         <div className={styles.ctas}>
-//           <a
-//             className={styles.primary}
-//             href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-//             target="_blank"
-//             rel="noopener noreferrer"
-//           >
-//             <Image
-//               className={styles.logo}
-//               src="/vercel.svg"
-//               alt="Vercel logomark"
-//               width={20}
-//               height={20}
-//             />
-//             Deploy now
-//           </a>
-//           <a
-//             href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-//             target="_blank"
-//             rel="noopener noreferrer"
-//             className={styles.secondary}
-//           >
-//             Read our docs
-//           </a>
-//         </div>
-//       </main>
-//       <footer className={styles.footer}>
-//         <a
-//           href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-//           target="_blank"
-//           rel="noopener noreferrer"
-//         >
-//           <Image
-//             aria-hidden
-//             src="/file.svg"
-//             alt="File icon"
-//             width={16}
-//             height={16}
-//           />
-//           Learn
-//         </a>
-//         <a
-//           href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-//           target="_blank"
-//           rel="noopener noreferrer"
-//         >
-//           <Image
-//             aria-hidden
-//             src="/window.svg"
-//             alt="Window icon"
-//             width={16}
-//             height={16}
-//           />
-//           Examples
-//         </a>
-//         <a
-//           href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-//           target="_blank"
-//           rel="noopener noreferrer"
-//         >
-//           <Image
-//             aria-hidden
-//             src="/globe.svg"
-//             alt="Globe icon"
-//             width={16}
-//             height={16}
-//           />
-//           Go to nextjs.org →
-//         </a>
-//       </footer>
-//     </div>
-//   );
-// }
+  return (
+    <div className="grid grid-cols-2 m-8 gap-8">
+      <div className="flex flex-col gap-5">
+        <Header type="h1">Search resorts for available ski lifts</Header>
+        <div className="flex flex-row gap-3">
+          <Input
+            id="ski_resort"
+            value={resort}
+            onChange={handleSearchInputChange}
+            name="ski_resort"
+            placeholder="Search for ski resort..."
+            onBlur={() => handleSearch()}
+          />
+          <Button onClick={() => handleSearch()}>Search</Button>
+        </div>
+        {/* <div>
+          Val Cenis is a ski resort located in the French Alps, near the Italian
+          border in the Savoie region. It is part of the Haute Maurienne Vanoise
+          area and combines the villages of Lanslebourg and Lanslevillard. The
+          resort offers a blend of traditional Alpine charm and modern
+          facilities, with over 125 km of slopes catering to all levels, from
+          beginners to advanced skiers. Known for its scenic views of the
+          Vanoise National Park, Val Cenis also provides opportunities for
+          snowshoeing, cross-country skiing, and family-friendly activities. Its
+          high-altitude location ensures reliable snow conditions throughout the
+          season.
+        </div> */}
+        {/* minlat: {coords.minLatitude},
+        <br />
+        maxlat:{coords.maxLatitude},
+        <br />
+        minlon:{coords.minLongitude},
+        <br />
+        maxlon:{coords.maxLongitude} */}
+        {coords && <MapResort {...coords} />}
+      </div>
+      <div>
+        {isLoading && <div>Loading...</div>}
+        <LiftList lifts={lifts} />
+      </div>
+    </div>
+  );
+}

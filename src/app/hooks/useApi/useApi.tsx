@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+// A simple wrapper to handle fetch requests
 function useApi(url: string, options?: any) {
   const debug = process.env.NEXT_PUBLIC_DEBUG;
 
