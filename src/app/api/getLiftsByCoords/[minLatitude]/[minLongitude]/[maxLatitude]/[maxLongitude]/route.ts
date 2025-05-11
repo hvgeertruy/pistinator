@@ -2,6 +2,16 @@ import { LiftProps } from "@/app/types/lifts";
 import { excludedLifts } from "@/lib/utils";
 import { NextResponse } from "next/server";
 
+/* Goal of this API:
+   Get all lifts from openStreetMap using coords.
+
+  characteristics:
+  - coords are a 'square', so it can contain other things in openstreetmap
+  - the data does not seem complete. lots of lifts with really limited info
+  - it makes sense to filter the lifts a bit, as some lifts are only for goods, stations are unnecessary etc.
+  - the attribute names are not consistent. for example, aerialway:capacity and piste:lift:capacity are the same thing.
+*/
+
 export async function GET(request: Request, context: any) {
   const debug = process.env.NEXT_PUBLIC_DEBUG;
 
@@ -30,13 +40,17 @@ export async function GET(request: Request, context: any) {
     const url = `${process.env.URL_LIFTS_BY_COORDS}?data=${encodeURIComponent(
       urlPart
     )}`;
-    debug && console.info(`[DEBUG] fetching ${url}`);
+    if (debug) {
+      console.info(`[DEBUG] fetching ${url}`);
+    }
 
     const response = await fetch(url);
 
     // Guard: request failed
     if (!response.ok) {
-      debug && console.error(response);
+      if (debug) {
+        console.error(response);
+      }
       return NextResponse.json(
         { message: response.statusText },
         { status: 500 }
@@ -49,7 +63,9 @@ export async function GET(request: Request, context: any) {
 
     return NextResponse.json(lifts, { status: 200 });
   } catch (error) {
-    debug && console.error(error);
+    if (debug) {
+      console.error(error);
+    }
     return NextResponse.json({ message: error }, { status: 500 });
   }
 }

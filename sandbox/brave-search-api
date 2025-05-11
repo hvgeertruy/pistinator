@@ -1,0 +1,23 @@
+  // search api plugin
+  //https://brave.com/search/api/
+
+  // https://community.openai.com/t/how-to-enable-web-search-results-with-chatgpt-api/318118
+  // site: skiresort.info skilift details winterberg poppen
+
+
+  // -H "Accept: application/json" \
+  // -H "Accept-Encoding: gzip" \
+  // -H "X-Subscription-Token: <YOUR_API_KEY>"
+
+//   GET /res/v1/web/search?q=Eiger%20Express%20site%3Askiresort.info&count=10&offset=0&result_filter=web HTTP/1.1
+  // Host: api.search.brave.com
+  // Accept: application/json
+  // Authorization: Bearer YOUR_API_KEY
+
+url:
+https://api.search.brave.com/res/v1/web/search?q=site:skiresort.info+skilift+details+winterberg+poppen&count=1&offset=0&result_filter=web
+
+headers:
+Accept: application/json
+X-Subscription-Token: BSAOMDjoKIG3Gtj7IOcWqdsk4G3CSq7
+Accept-Encoding: gzip

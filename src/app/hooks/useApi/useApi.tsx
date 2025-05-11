@@ -1,26 +1,28 @@
 import { useState } from "react";
 
 // A simple wrapper to handle fetch requests
-function useApi(url: string, options?: any) {
+function useApi(url: string, headersExt?: any) {
   const debug = process.env.NEXT_PUBLIC_DEBUG;
 
-  const opts = {
+  const headers = {
     headers: {
       Accept: "application/json",
       method: "GET",
     },
-    ...options,
+    ...headersExt,
   };
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const fetchData = async () => {
-    debug && console.info("[DEBUG] fetching url", url);
+    if (debug) {
+      console.info("[DEBUG] fetching url", url);
+    }
     try {
       setIsLoading(true);
 
-      const response = await fetch(url, opts);
+      const response = await fetch(url, headers);
 
       if (response) {
         const data = await response.json();

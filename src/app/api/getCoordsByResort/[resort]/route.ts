@@ -1,7 +1,14 @@
 import { NextResponse } from "next/server";
 
+/* Goal of this API:
+   Get coordinates of a given ski resort. We can use these coords to gather more information about a ski resort in openstreetmap
+
+  characteristics:
+  - coords order is a bit different than how openstreetmap consumes them. you probably want to switch 2nd and 3rd value
+*/
+
 export async function GET(request: Request, context: any) {
-  const debug = process.env.NEXT_PUBLIC_DEBUG;
+  const debug = process.env.NEXT_PUBLIC_DEBUG === "true";
 
   const { resort } = await context.params;
 
@@ -15,12 +22,16 @@ export async function GET(request: Request, context: any) {
 
   try {
     const url = `${process.env.URL_RESORT_COORDS}${encodeURIComponent(resort)}`;
-    debug && console.info(`[DEBUG] fetching ${url}`);
+    if (debug) {
+      console.info(`[DEBUG] fetching ${url}`);
+    }
     const response = await fetch(url);
 
     // Guard: request failed
     if (!response.ok) {
-      debug && console.error(response);
+      if (debug) {
+        console.error(response);
+      }
       return NextResponse.json(
         { message: response.statusText },
         { status: 500 }
@@ -38,7 +49,9 @@ export async function GET(request: Request, context: any) {
     // API can yield multiple results, any one should suffice
     return NextResponse.json(coords, { status: 200 });
   } catch (error) {
-    debug && console.error(error);
+    if (debug) {
+      console.error(error);
+    }
     return NextResponse.json({ message: error }, { status: 500 });
   }
 }

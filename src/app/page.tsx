@@ -9,6 +9,7 @@ import MapResort from "@/components/mapResort/mapResort";
 import useApi from "@/app/hooks/useApi/useApi";
 import { LiftProps } from "@/app/types/lifts";
 import { CoordsProps } from "@/app/types/coords";
+import useSearchSkiResort from "@/app/hooks/useSearchSkiResort/useSearchSkiResort";
 
 export default function Lifts() {
   const debug = process.env.NEXT_PUBLIC_DEBUG;
@@ -32,6 +33,7 @@ export default function Lifts() {
       coords.maxLatitude
     )}/${encodeURIComponent(coords.maxLongitude)}`
   );
+  const { fetchSearch } = useSearchSkiResort("val cenis", "poppen");
 
   const handleSearchInputChange = (event: { target: HTMLInputElement }) => {
     const value = (event.target as HTMLInputElement).value;
@@ -45,7 +47,9 @@ export default function Lifts() {
     // get coords
     const coordsResult = await fetchCoords();
     coordsResult && setCoords(coordsResult.data);
-    debug && console.info("[DEBUG] coords:", coords);
+    if (debug) {
+      console.info("[DEBUG] coords:", coords);
+    }
 
     setIsLoading(false);
   };
@@ -56,7 +60,9 @@ export default function Lifts() {
       const liftsResult = await fetchLifts();
       liftsResult?.data?.map((item: LiftProps) => (item.resort = resort));
       liftsResult && setLifts(liftsResult.data); // TODO; not working as expected?
-      debug && console.info("[DEBUG] lifts:", liftsResult);
+      if (debug) {
+        console.info("[DEBUG] lifts:", liftsResult);
+      }
     };
 
     getit();
@@ -76,6 +82,7 @@ export default function Lifts() {
             onBlur={() => handleSearch()}
           />
           <Button onClick={() => handleSearch()}>Search</Button>
+          <Button onClick={() => fetchSearch()}>api</Button>
         </div>
         {/* <div>
           Val Cenis is a ski resort located in the French Alps, near the Italian

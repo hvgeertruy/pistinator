@@ -1,4 +1,5 @@
 CHATGPT_API_KEY=<your-api-key>
+BRAVE_SEARCH_API_KEY=<your-api-key>
 URL_RESORT_COORDS=https://nominatim.openstreetmap.org/search?format=json&q=
 URL_LIFTS_BY_COORDS=https://overpass-api.de/api/interpreter
 URL_MAP_BY_LIFT_ID=https://www.openstreetmap.org/way/48199277
